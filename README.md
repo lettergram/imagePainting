@@ -3,7 +3,7 @@ imagePainting
 
 Converts an image into a painting
 
-## Requirements 
+### Requirements 
 
 * I highly recommend a computer with decent hardware, as these caluclations can take some time. 
 
