@@ -15,4 +15,5 @@ Converts an image into a painting
   4. cmake -DCMAKE_INSTALL_PREFIX=/usr .
   5. make
   6. sudo make install
-  7. Use jpg2png.cpp to test (review source if you have trouble with compiling/executing)
+
+* Use jpg2png.cpp to test OpenCV install (review source if you have trouble with compiling/executing)
