@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// To Execute: ./paint ../images/test.jpg 0 - 9 merge
+
 using namespace cv;
 
 /// Global variables
@@ -43,7 +45,7 @@ Mat paintBetweenEdges(Mat &img, int step){
       /**
        * Should check if lines are vertical or horizontal and paint
        * similar to those lines.
-       */
+       **/
       
       /* Find average colors of step */
       for(int k = 0; k < step; k++){
@@ -69,6 +71,10 @@ Mat paintBetweenEdges(Mat &img, int step){
       g = g / gcount;
       b = b / bcount;
       
+      
+      /**
+       *  Paints little boxes, should change to make a bit better
+       **/
       for(int k = 0; k < step; k++){
         for(int s = 0; s < step; s++){
           if((*img.ptr<Point3_<uchar> >(i + k, j + s)).x == 0){
@@ -76,9 +82,9 @@ Mat paintBetweenEdges(Mat &img, int step){
             (*img.ptr<Point3_<uchar> >(i + k, j + s)).y = g;
             (*img.ptr<Point3_<uchar> >(i + k, j + s)).z = b;
           }else{
-            (*img.ptr<Point3_<uchar> >(i + k, j + s)).x = (r + (*img.ptr<Point3_<uchar> >(i + k, j + s)).x) / 2;
-            (*img.ptr<Point3_<uchar> >(i + k, j + s)).y = (g + (*img.ptr<Point3_<uchar> >(i + k, j + s)).y) / 2;
-            (*img.ptr<Point3_<uchar> >(i + k, j + s)).z = (b + (*img.ptr<Point3_<uchar> >(i + k, j + s)).z) / 2;
+            (*img.ptr<Point3_<uchar> >(i + k, j + s)).x = ((*img.ptr<Point3_<uchar> >(i + k, j + s)).x);//*2+ r) / 3;
+            (*img.ptr<Point3_<uchar> >(i + k, j + s)).y = ((*img.ptr<Point3_<uchar> >(i + k, j + s)).y);//*2+ g) / 3;
+            (*img.ptr<Point3_<uchar> >(i + k, j + s)).z = ((*img.ptr<Point3_<uchar> >(i + k, j + s)).z);//*2+ b) / 3;
           }
         }
       }
@@ -88,31 +94,15 @@ Mat paintBetweenEdges(Mat &img, int step){
   return paintImg;
 }
 
-/**
- * @function CannyThreshold
- * @brief Trackbar callback - Canny thresholds input with a ratio 1:3
- */
-void CannyThreshold(int, void*)
-{
-  /// Reduce noise with a kernel 3x3
-  blur( src_gray, detected_edges, Size(3,3) );
-  
-  /// Canny detector
-  Canny( detected_edges, detected_edges, lowThreshold, lowThreshold*ratio, kernel_size );
-  
-  /// Using Canny's output as a mask, we display our result
-  dst = Scalar::all(0);
-  
-  src.copyTo( dst, detected_edges);
-  imshow( window_name, dst );
-}
-
-
 /** @function main */
 int main( int argc, char** argv )
 {
   /// Load an image
   src = imread( argv[1] );
+  int overlay = 10;
+  if(argc > 1){
+    overlay = *argv[2] - '0';
+  }
   
   if( !src.data )
   { return -1; }
@@ -123,22 +113,21 @@ int main( int argc, char** argv )
   /// Convert the image to grayscale
   cvtColor( src, src_gray, CV_BGR2GRAY );
   
-  /// Create a window
-  namedWindow( window_name, CV_WINDOW_OPENGL);
-  resizeWindow( window_name, 500,500);
+  /// Reduce noise with a kernel 3x3
+  blur( src_gray, detected_edges, Size(3,3) );
   
+  /// Canny detector
+  Canny( detected_edges, detected_edges, lowThreshold, lowThreshold*ratio, kernel_size );
   
-  /// Create a Trackbar for user to enter threshold
-  createTrackbar( "Min Threshold:", window_name, &lowThreshold, max_lowThreshold, CannyThreshold );
+  /// Using Canny's output as
+  dst = Scalar::all(0);
   
-  /// Show the image
-  CannyThreshold(0, 0);
+  src.copyTo( dst, detected_edges);
   
-  /// Wait until user exit program by pressing a key
-  waitKey(0);
+  wait(0);
   
   imwrite("../images/edges.jpg", dst);
-  imwrite("../images/painted.jpg", paintBetweenEdges(dst, 10));
+  imwrite("../images/painted.jpg", paintBetweenEdges(dst, overlay));
   
   return 0;
 }

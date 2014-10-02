@@ -17,3 +17,5 @@ Converts an image into a painting
   6. sudo make install
 
 * Use jpg2png.cpp to test OpenCV install (review source if you have trouble with compiling/executing)
+
+* To Compile: g++ -I/usr/include -L/usr/lib -lopencv_core.2.4.9 -lopencv_calib3d.2.4.9 -lopencv_imgproc.2.4.9 -lopencv_highgui.2.4.9 <File Name>.cpp -o <Executable>
